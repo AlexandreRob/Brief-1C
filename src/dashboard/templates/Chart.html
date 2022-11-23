@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChartJS</title>
+</head>
+<body>
+    <div>
+        <canvas id="myChart" width="400" height="100">
+            <p>Hello Fallback World</p>
+        </canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
+<script>
+    const ctx = document.getElementById('myChart');
+    new Chart(ctx, {
+        type: 'line',
+        data: { datasets: [{
+            data: [0, 0],
+        }, {
+            data: [0, 1]
+        }, {
+            data: [1, 0],
+            showLine: true // overrides the `line` dataset default
+        }, {
+            type: 'scatter', // 'line' dataset default does not affect this dataset since it's a 'scatter'
+            data: [1, 1]
+        }]},
+        options: {},
+        plugins: []
+})
+    // new Chart(ctx, {
+    //   type: 'bar',
+    //   data: {
+    //     labels: ['Australia', 'Austria', 'Bahrain', 'Belgium', 'Brazil', 'Canada',
+    //     'Channel Islands', 'Cyprus', 'Czech Republic', 'Denmark', 'EIRE',
+    //     'European Community', 'Finland', 'France', 'Germany', 'Greece', 'Hong Kong',
+    //     'Iceland', 'Israel', 'Italy', 'Japan', 'Lebanon', 'Lithuania', 'Malta',
+    //     'Netherlands', 'Norway', 'Poland', 'Portugal', 'Saudi Arabia', 'Singapore',
+    //     'Spain', 'Sweden', 'Switzerland', 'USA', 'United Arab Emirates', 'United Kingdom', 'Unspecified'],
+    //     datasets: [{
+    //       label: '#Ce pays(Country) a acheté x nombre produit(Quantity)',
+    //       data: [50239, 2108, 260, 10653, 356, 1684,
+    //       4528, 4607, 307, 3469, 53406, 162,5639,49504,53300,
+    //       1077,3592,1313,360,3155,17448,386,652,399,99852,5976,1996,6888,
+    //       75,2475,12068,15866,12786,137,496,1858307,1163],
+    //       borderWidth: 1,
+    //       borderColor: '#36A2EB',
+    //       backgroundColor: '#9BD0F5',
+    //     }]
+    //   },
+    //   options: {
+    //     scales: {
+    //       y: {
+    //         beginAtZero: true
+    //       }
+    //     }
+    //   }
+    // });
+
+  </script>
