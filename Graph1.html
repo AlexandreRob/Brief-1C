@@ -1,0 +1,28 @@
+<div style="width: 1000px;">
+    <canvas id="myChart"></canvas>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    const ctx = document.getElementById('myChart');
+  
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['10002', '10125', '10133', '10135', '11001'],
+        datasets: [{
+          label: 'répartition des ventes par produit',
+          data: [1037, 685, 1066 , 1512, 517],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
