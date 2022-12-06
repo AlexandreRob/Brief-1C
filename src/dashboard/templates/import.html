@@ -2,14 +2,20 @@
 
 {%  block content %}
 
+    {% if user.is_authenticated %}
+    <h1>Import csv</h1>
+        <br><br>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <button id="btn-import-csv" type="submit" class="btn btn-primary">Importer</button>
+                <input class="form-control" type="file" name="csv">
+            </div>
+        </form>
 
-<h1>Import csv</h1>
-    <br><br>
-    <form action="" method="POST">
-        <div class="input-group mb-3">
-            <button id="btn-import-csv" type="submit" class="btn btn-primary">Importer</button>
-            <input class="form-control" type="file" name="csv">
-        </div>
-    </form>
+    {% else %}
+    <h1>Vous devez être connecté pour avoir accès a cette page</h1>
+        
+    {% endif %}
 
 {% endblock %}

@@ -8,17 +8,6 @@
 from django.db import models
 
 
-class Appartenir(models.Model):
-    idproduit = models.OneToOneField('Produit', models.DO_NOTHING, db_column='idproduit', primary_key=True)
-    idfacture = models.ForeignKey('Facture', models.DO_NOTHING, db_column='idfacture', blank=True, null=True)
-    unitprice = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    quantity = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'appartenir'
-
-
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -88,23 +77,25 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
-class Avoir(models.Model):
-    idcountry = models.OneToOneField('Country', models.DO_NOTHING, db_column='idcountry', primary_key=True)
-    idfacture = models.ForeignKey('Facture', models.DO_NOTHING, db_column='idfacture', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'avoir'
-
-
 class Country(models.Model):
-    idcountry = models.CharField(primary_key=True, max_length=50)
-    customerid = models.CharField(max_length=50, blank=True, null=True)
-    namecountry = models.CharField(max_length=50, blank=True, null=True)
+    country_name = models.CharField(primary_key=True, max_length=50)
+    zone_name = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'country'
+
+
+class Detailfacture(models.Model):
+    stock_code = models.ForeignKey('Product', models.DO_NOTHING, db_column='stock_code', blank=True, null=True)
+    invoice_no = models.ForeignKey('Invoice', models.DO_NOTHING, db_column='invoice_no', blank=True, null=True)
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+    detailfacture_id = models.AutoField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'detailfacture'
 
 
 class DjangoAdminLog(models.Model):
@@ -152,21 +143,21 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
-class Facture(models.Model):
-    idfacture = models.CharField(primary_key=True, max_length=50)
-    invoiceno = models.CharField(max_length=50, blank=True, null=True)
-    invoicedate = models.DateTimeField(blank=True, null=True)
+class Invoice(models.Model):
+    invoice_no = models.CharField(primary_key=True, max_length=6)
+    invoice_date = models.DateTimeField(blank=True, null=True)
+    country_name = models.ForeignKey(Country, models.DO_NOTHING, db_column='country_name')
+    customer_id = models.CharField(max_length=5, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'facture'
+        db_table = 'invoice'
 
 
-class Produit(models.Model):
-    idproduit = models.CharField(primary_key=True, max_length=50)
-    stockcode = models.CharField(max_length=50, blank=True, null=True)
-    description = models.CharField(max_length=50, blank=True, null=True)
+class Product(models.Model):
+    stock_code = models.CharField(primary_key=True, max_length=50)
+    description = models.CharField(max_length=80, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'produit'
+        db_table = 'product'

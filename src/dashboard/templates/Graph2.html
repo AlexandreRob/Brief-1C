@@ -2,34 +2,38 @@
 
 {%  block content %}
 
-
-<div style="width: 1000px;">
-    <canvas id="myChart"></canvas>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <script>
-    const ctx = document.getElementById('myChart');
-  
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['United Kingdom', 'Germany', 'France', 'EIRE', 'Netherlands'],
-        datasets: [{
-          label: 'répartition des ventes par région',
-          data: [225759, 4271, 3661, 3190, 1245],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
+  {% if user.is_authenticated %}  
+  <div style="width: 1000px;">
+      <canvas id="myChart"></canvas>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+      const ctx = document.getElementById('myChart');
+    
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['United Kingdom', 'Germany', 'France', 'EIRE', 'Netherlands'],
+          datasets: [{
+            label: 'répartition des ventes par région',
+            data: [225759, 4271, 3661, 3190, 1245],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
           }
         }
-      }
-    });
-  </script>
+      });
+    </script>
+
+  {% else %}
+  <h1>Vous devez être connecté pour avoir accès a cette page</h1>
+  {% endif %}
 
 {% endblock %}

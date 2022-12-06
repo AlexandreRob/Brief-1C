@@ -2,23 +2,23 @@
 
 {%  block content %}
 
-   
-    <h1>Bonjour <br>
-        et Bienvenue</h1>
+    {% if user.is_authenticated %}
+    <h1>Bonjour {{ user.first_name }} <br>
+        et bienvenue</h1>
     
     <br><br>
     <a class="btn btn-warning " href="{%  url 'import' %}">Importer un csv</a>
     
     <br><br> <br><br>
-    <a class="btn btn-warning " href="{%  url 'graph1' %}">Importer un csv</a>
+    <a class="btn btn-warning " href="{%  url 'graph1' %}">Voir graph1</a>
 
-    <a class="btn btn-warning " href="{%  url 'graph2' %}">Importer un csv</a>
+    <a class="btn btn-warning " href="{%  url 'graph2' %}">Voir graph2</a>
 
-    <a class="btn btn-warning " href="{%  url 'graph3' %}">Importer un csv</a>
-    
-    
-
-    
-
+    <a class="btn btn-warning " href="{%  url 'graph3' %}">Voir graph3</a>
+    {% else %}
+    <h1>Bonjour<br>
+        Veuillez-vous connecter</h1>
+        
+    {% endif %}
 {% endblock %}
 

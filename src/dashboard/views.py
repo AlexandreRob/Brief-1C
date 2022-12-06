@@ -3,59 +3,54 @@ from django.template import loader
 from django.shortcuts import render
 import csv
 from .models import *
+from dashboard.models import Country, Detailfacture, Invoice, Product
 
 
 
 def home(request):
     return render(request, "home.html", {})
 
-
-def get_InvoiceNo(elements, details):
-    facture = elements[0]
-    details["details"] = {}
-    details["details"]["facture"] = facture
-
-def get_StockCode(elements, details):
-    produit = elements[1]
-    details["details"] = {}
-    details["details"]["produit"] = produit
-
-def get_Description(elements, details):
-    description = elements[2]
-    details["details"] = {}
-    details["details"]["description"] = description
-
-def get_Quantity(elements, details):
+def get_data(elements, infos) : 
+    InvoiceNo = elements[0]
+    StockCode = elements[1]
+    Description = elements[2]
     Quantity = elements[3]
-    details["details"] = {}
-    details["details"]["quantité"] = Quantity
-
-def get_InvoiceDate(elements, details):
-    date = elements[4]
-    details["details"] = {}
-    details["details"]["date"] = date
-
-def get_UnitPrice(elements, details):
-    prix = elements[5]
-    details["details"] = {}
-    details["details"]["prix"] = prix
-
-def get_CustomerID(elements, details):
+    InvoiceDate = elements[4]
+    UnitPrice = elements[5]
     CustomerID = elements[6]
-    details["details"] = {}
-    details["details"]["CustomerID"] = CustomerID
-
-def get_Country(elements, details):
-    pays = elements[7]
-    details["details"] = {}
-    details["details"]["pays"] = pays
+    Country = elements[7]
+    
+    infos["details"] = {}
+    infos["details"]["InvoiceNo"] = InvoiceNo
+    infos["details"]["StockCode"] = StockCode
+    infos["details"]["Description"] = Description
+    infos["details"]["Quantity"] = Quantity
+    infos["details"]["InvoiceDate"] = InvoiceDate
+    infos["details"]["UnitPrice"] = UnitPrice
+    infos["details"]["CustomerID"] = CustomerID
+    infos["details"]["Country"] = Country
     
 
-def create_data(details):
-    
+def create_data(infos):
+    infos["details"] = {}
+    infos["details"]["InvoiceNo"]
+    infos["details"]["StockCode"]
+    infos["details"]["Description"]
+    infos["details"]["Quantity"]
+    infos["details"]["InvoiceDate"]
+    infos["details"]["UnitPrice"]
+    infos["details"]["CustomerID"]
+    infos["details"]["Country"]
+
 
 def import_csv(request):
-        return render(request, "import.html", {})
+    if request.method == "POST":
+        fichier = request.POST['csv']
+        
+
+        with open('D:/Documents/Afpar exo/Brief-1C/' + fichier, 'r') as f:
+            reader = csv.reader(f)
+    return render(request, "import.html", {})
     
 
 def graph1(request): 
