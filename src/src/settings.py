@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'src.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "DB_AFPAR01",
+        "NAME": "DB_AFPAR02",
         "USER" : "moni",
         "PASSWORD" : "moni",
     }
