@@ -15,16 +15,18 @@ class Command(BaseCommand):
         df
         indexNames = df[df["Country"] == "Unspecified"].index
         df.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
+
         df.drop(df[df['InvoiceNo'].str.len() > 6].index, inplace = True)
         SuppQuantity = df[df['Quantity'] < 0 ].index
         df.drop(SuppQuantity , inplace=True)  #Efface quantité < 0
+
         SuppPrix = df[df["UnitPrice"]== 0].index
         df.drop(SuppPrix , inplace=True)  #Efface prix unitaire = 0
-        SuppPunsp = df[df["Country"] == "Unspecified"].index
-        df.drop(SuppPunsp , inplace=True) #Efface les pays = a Unspecified
+        
         indexNames = df[df['StockCode'].str.match('^A-Za-z')==True].index
         df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
         df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
+        
         #Efface les doublon commun de la colonne facture et produit
         
 
@@ -33,18 +35,22 @@ class Command(BaseCommand):
         product = product.drop(['Country','InvoiceNo','UnitPrice','Quantity','CustomerID','InvoiceDate'], axis=1)
         product.drop_duplicates("StockCode", keep = 'first', inplace= True)
         
-
-        ######################################################################### Table Country
-        country = df
-        country = country.drop(['InvoiceNo','StockCode','UnitPrice', 'Description','Quantity','CustomerID','InvoiceDate'], axis=1)
-
+        
         ######################################################################### Table detailfacture
         detailfacture = df
         detailfacture = detailfacture.drop(['Country', 'Description','CustomerID','InvoiceDate'], axis=1)
+        
+        
 
         ######################################################################### Table InvoiceNo
         invoiceno = df
-        invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode'], axis=1)
+        invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode','InvoiceDate','CustomerID'], axis=1)
+        invoiceno.drop_duplicates("InvoiceNo", keep = 'first', inplace= True)
+
+        ######################################################################### Table Country
+        country = df
+        country.drop_duplicates("Country", keep = 'first', inplace= True)
+        
 
 
         product.columns = product.columns.str.lower()
@@ -89,5 +95,5 @@ class Command(BaseCommand):
 
         
         country.to_sql("country",if_exists='append', con = engine, index=False)
-        detailfacture.to_sql("detailfacture",if_exists='append', con = engine, index=False)
         invoiceno.to_sql('invoice',if_exists='append', con = engine, index=False)
+        detailfacture.to_sql("detailfacture",if_exists='append', con = engine, index=False)

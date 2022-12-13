@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {%  block content %}
-  {% if user.is_authenticated %}  
+  {% if user.is_authenticated %} 
+  
+  <h2>Graph 3</h2>
+  <hr>
   <div style="width: 750px;">
           <canvas id="myChart"></canvas>
         </div>
@@ -45,6 +48,9 @@
     }]
   }});
   </script>
+  <a class="btn btn-warning " href="{%  url 'graph1' %}">Voir graph 1</a>
+
+  <a class="btn btn-warning " href="{%  url 'graph2' %}">Voir graph 2</a>
 
 {% else %}
 <h1>Vous devez être connecté pour avoir accès a cette page</h1>

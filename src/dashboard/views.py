@@ -8,7 +8,7 @@ import psycopg2
 import psycopg2.extras as extras
 from .models import *
 from django.conf import settings
-from dashboard.models import Invoice
+from dashboard.models import *
 
 
 
@@ -52,11 +52,55 @@ def page_csv(request):
     return render(request, "import.html", {})
     
 
-def graph1(request): 
-    return render(request, "Graph1.html", {})
+def topG1(request): 
+    sql = '''SELECT product.stockcode, count(*)
+                FROM product
+                INNER JOIN detailfacture on product.stockcode = detailfacture.stockcode
+                GROUP BY product.stockcode
+                ORDER BY count DESC
+                LIMIT 10'''
+        
+    
+    res = Product.objects.raw(sql)
+  
+    return render(request, "Graph1.html", {'data': res})
 
-def graph2(request): 
-    return render(request, "Graph2.html", {})
+def flopG1(request): 
+    sql = '''SELECT product.stockcode, count(*)
+                FROM product
+                INNER JOIN detailfacture on product.stockcode = detailfacture.stockcode
+                GROUP BY product.stockcode
+                ORDER BY count DESC
+                LIMIT 10'''
+        
+    
+    res = Product.objects.raw(sql)
+  
+    return render(request,)
+
+def topG2(request): 
+    sql = '''SELECT country, count(*)
+                FROM detailfacture
+                INNER JOIN invoice on detailfacture.invoiceno = invoice.invoiceno
+                GROUP BY invoice.country
+                ORDER BY count DESC
+                LIMIT 10'''
+
+    res = Country.objects.raw(sql)
+    
+    return render(request, "Graph2.html", {'data': res})
+
+def flopG2(request): 
+    sql = '''SELECT country, count(*)
+                FROM detailfacture
+                INNER JOIN invoice on detailfacture.invoiceno = invoice.invoiceno
+                GROUP BY invoice.country
+                ORDER BY count ASC
+                LIMIT 10'''
+
+    res = Country.objects.raw(sql)
+    
+    return render(request)
 
 def graph3(request): 
     return render(request, "Graph3.html", {})

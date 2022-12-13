@@ -78,7 +78,7 @@ class AuthUserUserPermissions(models.Model):
 
 
 class Country(models.Model):
-    countryname = models.CharField(primary_key=True, max_length=50)
+    country = models.CharField(primary_key=True, max_length=50)
     zone_name = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
@@ -146,7 +146,7 @@ class DjangoSession(models.Model):
 
 class Invoice(models.Model):
     invoiceno = models.CharField(primary_key=True, max_length=6)
-    invoicedate = models.DateTimeField(blank=True, null=True)
+    invoicedate = models.CharField(blank=True, null=True, max_length=50,)
     countryname = models.ForeignKey(Country, models.DO_NOTHING, db_column='countryname')
     customerid = models.CharField(max_length=5, blank=True, null=True)
 

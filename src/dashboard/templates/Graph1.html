@@ -2,7 +2,12 @@
 
 {%  block content %}
   {% if user.is_authenticated %}
-  <div style="width: 1000px;">
+
+  <h2>Graph 1</h2>
+  <hr>
+  <div class="row mt-2">
+    
+    <div class="chart-container" style="position: relative; height:80vh; width:175vw">
       <canvas id="myChart"></canvas>
     </div>
     
@@ -12,13 +17,31 @@
       const ctx = document.getElementById('myChart');
     
       new Chart(ctx, {
-        type: 'bar',
+        type: 'polarArea',
         data: {
-          labels: ['85123A', '22423', '85099B', '47566', '20725'],
+          labels: [{% for item in data %}"{{ item.stockcode }}",{% endfor %}], //stockcode 
           datasets: [{
             label: 'répartition des ventes par produit',
-            data: [1315, 1272, 1049 , 1013, 830],
-            borderWidth: 1
+            data: [{% for item in data %}'{{ item.count }}',{% endfor %}], // nombre de vente de stockcode
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 205, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(201, 203, 207, 0.2)'
+            ],
+            borderColor: [
+              'rgb(255, 99, 132)',
+              'rgb(255, 159, 64)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(54, 162, 235)',
+              'rgb(153, 102, 255)',
+              'rgb(201, 203, 207)'
+            ],
+            borderWidth: 2
           }]
         },
         options: {
@@ -30,6 +53,14 @@
         }
       });
     </script>
+    
+  </div>
+    <a class="btn btn-warning " href="{%  url 'graph2' %}">Voir graph 2</a>
+
+    <a class="btn btn-warning " href="{%  url 'graph3' %}">Voir graph 3</a>
+
+
+  
     {% else %}
     <h1>Vous devez être connecté pour avoir accès a cette page</h1>
         

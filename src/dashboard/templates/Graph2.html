@@ -3,34 +3,42 @@
 {%  block content %}
 
   {% if user.is_authenticated %}  
-  <div style="width: 1000px;">
-      <canvas id="myChart"></canvas>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-      const ctx = document.getElementById('myChart');
-    
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['United Kingdom', 'Germany', 'France', 'EIRE', 'Netherlands'],
-          datasets: [{
-            label: 'répartition des ventes par région',
-            data: [225759, 4271, 3661, 3190, 1245],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
+
+  <h2>Graph 2</h2>
+  <hr>
+  <div class="row mt-2">
+    <div style="width: 1500px;">
+        <canvas id="myChart"></canvas>
+      </div>
+      
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+      <script>
+        const ctx = document.getElementById('myChart');
+      
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: [{% for item in data %}"{{ item.country }}",{% endfor %}],
+            datasets: [{
+              label: 'répartition des ventes par région',
+              data: [{% for item in data %}'{{ item.count }}',{% endfor %}],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
             }
           }
-        }
-      });
-    </script>
+        });
+      </script>
+  </div>
+    <a class="btn btn-warning " href="{%  url 'graph1' %}">Voir graph 1</a>
+
+    <a class="btn btn-warning " href="{%  url 'graph3' %}">Voir graph 3</a>
 
   {% else %}
   <h1>Vous devez être connecté pour avoir accès a cette page</h1>
