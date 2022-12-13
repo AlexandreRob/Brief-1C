@@ -113,3 +113,5 @@ df.columns = df.columns.str.lower()
 df["stockcode"] = df["stockcode"].str.lower()
 
 df = df.drop_duplicates(subset=["stockcode"], inplace=True)
+
+df.columns = df.columns.str.lower()

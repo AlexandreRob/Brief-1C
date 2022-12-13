@@ -3,27 +3,53 @@ import pandas as pd
 from dashboard.models import Invoice
 import sqlalchemy
 from django.conf import settings
+from dashboard.models import Product
 
 class Command(BaseCommand):
 
 
     def handle(self, *args , **options ):
-        file_csv = "D:\Documents\Afpar exo\data2011s2.csv"
+        file_csv = "D:\Documents\Afpar exo\Brief-1C\data.csv"
         df = df = pd.read_csv(file_csv, encoding= 'unicode_escape')
-        country = df
-        facture = df
-
-        
-        indexNames = country[country["Country"] == "Unspecified"].index
-        country.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
-        
-        facture = facture.drop(['Country', 'Description','Quantity','CustomerID','UnitPrice','InvoiceDate'], axis=1)
-        indexNames = facture[facture['StockCode'].str.match('^A-Za-z')==True].index
-        facture.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
-        facture.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
+        ######################################################################### Nettoyage df
+        df
+        indexNames = df[df["Country"] == "Unspecified"].index
+        df.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
+        df.drop(df[df['InvoiceNo'].str.len() > 6].index, inplace = True)
+        SuppQuantity = df[df['Quantity'] < 0 ].index
+        df.drop(SuppQuantity , inplace=True)  #Efface quantité < 0
+        SuppPrix = df[df["UnitPrice"]== 0].index
+        df.drop(SuppPrix , inplace=True)  #Efface prix unitaire = 0
+        SuppPunsp = df[df["Country"] == "Unspecified"].index
+        df.drop(SuppPunsp , inplace=True) #Efface les pays = a Unspecified
+        indexNames = df[df['StockCode'].str.match('^A-Za-z')==True].index
+        df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
+        df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
         #Efface les doublon commun de la colonne facture et produit
+        
 
-        facture.columns = facture.columns.str.lower()
+        ######################################################################### Table Product
+        product = df
+        product = product.drop(['Country','InvoiceNo','UnitPrice','Quantity','CustomerID','InvoiceDate'], axis=1)
+        product.drop_duplicates("StockCode", keep = 'first', inplace= True)
+        
+
+        ######################################################################### Table Country
+        country = df
+        country = country.drop(['InvoiceNo','StockCode','UnitPrice', 'Description','Quantity','CustomerID','InvoiceDate'], axis=1)
+
+        ######################################################################### Table detailfacture
+        detailfacture = df
+        detailfacture = detailfacture.drop(['Country', 'Description','CustomerID','InvoiceDate'], axis=1)
+
+        ######################################################################### Table InvoiceNo
+        invoiceno = df
+        invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode'], axis=1)
+
+
+        product.columns = product.columns.str.lower()
+        invoiceno.columns = invoiceno.columns.str.lower()
+        detailfacture.columns = detailfacture.columns.str.lower()
         country.columns = country.columns.str.lower()
         country = country['country']
         
@@ -39,5 +65,29 @@ class Command(BaseCommand):
         
         engine = sqlalchemy.create_engine(db_url, echo=False)
         
-        facture.to_sql("facture",if_exists='append', con = engine, index=False)
+
+
+
+
+
+        row_iter = product.iterrows()
+
+        objs = [
+
+            Product(
+
+                stockcode = row['stockcode'],
+
+                description = row['description'],
+            )
+
+            for index, row in row_iter
+
+        ]
+
+        Product.objects.bulk_create(objs)
+
+        
         country.to_sql("country",if_exists='append', con = engine, index=False)
+        detailfacture.to_sql("detailfacture",if_exists='append', con = engine, index=False)
+        invoiceno.to_sql('invoice',if_exists='append', con = engine, index=False)

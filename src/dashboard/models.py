@@ -77,6 +77,28 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
+class Country(models.Model):
+    countryname = models.CharField(primary_key=True, max_length=50)
+    zone_name = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'country'
+
+
+class Detailfacture(models.Model):
+    invoiceno = models.ForeignKey('Invoice', models.DO_NOTHING, db_column='invoiceno', blank=True, null=True)
+    stockcode = models.ForeignKey('Product', models.DO_NOTHING, db_column='stockcode', blank=True, null=True)
+    unitprice = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+    detailfactureid = models.AutoField(primary_key=True)
+
+    class Meta:
+        unique_together = ('stockcode', 'invoiceno')
+        managed = False
+        db_table = 'detailfacture'
+
+
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)
@@ -123,12 +145,20 @@ class DjangoSession(models.Model):
 
 
 class Invoice(models.Model):
-    InvoiceNo = models.CharField(primary_key=True, max_length=50)
-    StockCode = models.CharField(max_length=50, blank=True, null=True)
-    Quantity = models.IntegerField(blank=True, null=True)
-    Country = models.CharField(max_length=50, blank=True, null=True)
-    UnitPrice = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    invoiceno = models.CharField(primary_key=True, max_length=6)
+    invoicedate = models.DateTimeField(blank=True, null=True)
+    countryname = models.ForeignKey(Country, models.DO_NOTHING, db_column='countryname')
+    customerid = models.CharField(max_length=5, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'invoice'
+
+
+class Product(models.Model):
+    stockcode = models.CharField(primary_key=True, max_length=50)
+    description = models.CharField(max_length=80, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'product'
