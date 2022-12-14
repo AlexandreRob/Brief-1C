@@ -4,10 +4,9 @@
 
   {% if user.is_authenticated %}  
 
-  <h2>Graph 2 top 10 des pays avec le plus de ventes</h2>
-  <a class="btn btn-warning " href="{%  url 'graph2flop' %}">Voir graph 2 flop 10</a>
-  <a class="btn btn-warning " href="{%  url 'g2no' %}">Voir graph 2 sans UK</a>
+  <h2>Graph 2 flop 10 des pays avec le moin de ventes</h2>
   <hr>
+  <a class="btn btn-warning " href="{%  url 'graph2' %}">Voir graph 1 top 10</a>
   <div class="container">
     <div class="container-sm">
         <canvas id="myChart"></canvas>

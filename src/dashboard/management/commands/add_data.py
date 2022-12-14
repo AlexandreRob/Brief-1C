@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 import pandas as pd
-from dashboard.models import Invoice
 import sqlalchemy
 from django.conf import settings
 from dashboard.models import Product
@@ -9,8 +8,9 @@ class Command(BaseCommand):
 
 
     def handle(self, *args , **options ):
-        file_csv = "D:\Documents\Afpar exo\Brief-1C\data.csv"
+        file_csv = "D:\Documents\Afpar exo\Brief-1C\data2011s2.csv"
         df = df = pd.read_csv(file_csv, encoding= 'unicode_escape')
+
         ######################################################################### Nettoyage df
         df
         indexNames = df[df["Country"] == "Unspecified"].index
@@ -26,30 +26,30 @@ class Command(BaseCommand):
         indexNames = df[df['StockCode'].str.match('^A-Za-z')==True].index
         df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
         df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
-        
         #Efface les doublon commun de la colonne facture et produit
+        dfPropre = df.copy()
         
 
         ######################################################################### Table Product
-        product = df
+        product = dfPropre
         product = product.drop(['Country','InvoiceNo','UnitPrice','Quantity','CustomerID','InvoiceDate'], axis=1)
         product.drop_duplicates("StockCode", keep = 'first', inplace= True)
         
         
         ######################################################################### Table detailfacture
-        detailfacture = df
+        detailfacture = dfPropre
         detailfacture = detailfacture.drop(['Country', 'Description','CustomerID','InvoiceDate'], axis=1)
         
         
 
         ######################################################################### Table InvoiceNo
-        invoiceno = df
+        invoiceno = dfPropre
         invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode','InvoiceDate','CustomerID'], axis=1)
         invoiceno.drop_duplicates("InvoiceNo", keep = 'first', inplace= True)
 
         ######################################################################### Table Country
-        country = df
-        country.drop_duplicates("Country", keep = 'first', inplace= True)
+        country = dfPropre['Country']
+        country.drop_duplicates(keep = 'first', inplace= True)
         
 
 

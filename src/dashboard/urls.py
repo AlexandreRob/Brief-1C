@@ -4,8 +4,12 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('page_import/', views.page_csv, name='import'),
-    path('import_csv/', views.import_csv, name="import_csv"),
+    path('page_import/', views.import_csv, name="import_csv"),
     path('graph1/', views.topG1,name='graph1'),
+    path('graph1flop/', views.flopG1,name='graph1flop'),
     path('graph2/', views.topG2,name='graph2'),
+    path('graph2no/', views.G2no, name='g2no'),
+    path('graph2flop/', views.flopG2,name='graph2flop'),
     path('graph3/', views.graph3,name='graph3'),
+    path('test/', views.test,name='test'),
 ]

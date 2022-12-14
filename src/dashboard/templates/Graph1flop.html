@@ -3,16 +3,19 @@
 {%  block content %}
   {% if user.is_authenticated %}
 
-  <h2>Graph 1 top 10 des produits les plus vendus</h2>
+  <h2>Graph 1 flop 10 des produits les moins vendus</h2>
   <hr>
-  <a class="btn btn-warning " href="{%  url 'graph1flop' %}">Voir graph 1 flop 10</a>
+  <a class="btn btn-warning " href="{%  url 'graph1' %}">Voir graph 1 top 10</a>
   <div class= "container">
-    <div class="col md-5">
-  
+    <div class="row mt-5">
+      
       <div class="container-sm">
         <canvas id="myChart"></canvas>
       </div>
-<script>
+      
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+      <script>
         const ctx = document.getElementById('myChart');
       
         new Chart(ctx, {
@@ -22,37 +25,22 @@
             datasets: [{
               label: 'répartition des ventes par produit',
               data: [{% for item in data %}'{{ item.count }}',{% endfor %}], // nombre de vente de stockcode
-        
+
               borderWidth: 2
             }]
           },
           options: {
-            
             scales: {
               y: {
                 beginAtZero: true
               }
-            },
-            plugins: {
-              title: {
-                  display: false,
-                  text: 'Custom Chart Title',
-                  padding: {
-                      top: 10,
-                      bottom: 30
-                  }
-              },
-              subtitle: {
-                  display: false,
-                  text: 'Custom Chart Subtitle',
-
-              }
-          }
+            }
           }
         });
-</script>
+      </script>
+      
     </div>
-</div>
+  </div>
     <a class="btn btn-warning " href="{%  url 'graph2' %}">Voir graph 2</a>
 
     <a class="btn btn-warning " href="{%  url 'graph3' %}">Voir graph 3</a>
