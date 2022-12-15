@@ -47,15 +47,13 @@ class Command(BaseCommand):
         invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode','InvoiceDate','CustomerID'], axis=1)
         invoiceno.drop_duplicates("InvoiceNo", keep = 'first', inplace= True)
 
-        ######################################################################### Table Country
-        country = dfPropre['Country']
-        country.drop_duplicates(keep = 'first', inplace= True)
-        
-
-
         product.columns = product.columns.str.lower()
         invoiceno.columns = invoiceno.columns.str.lower()
         detailfacture.columns = detailfacture.columns.str.lower()
+
+        ######################################################################### Table Country
+        country = dfPropre
+        country.drop_duplicates(['Country'],keep = 'first', inplace= True)
         country.columns = country.columns.str.lower()
         country = country['country']
         

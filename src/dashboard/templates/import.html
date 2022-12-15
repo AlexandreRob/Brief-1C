@@ -5,7 +5,7 @@
     {% if user.is_authenticated %}
     <h1>Import csv</h1>
         <br><br>
-        <form action="import_csv" method="POST">
+        <form method="POST" action="import_csv">
             {% csrf_token %}
             <div class="input-group mb-3">
                 <button id="btn-import-csv" type="submit" class="btn btn-primary" href="">Importer</button>
