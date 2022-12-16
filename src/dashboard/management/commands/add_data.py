@@ -27,6 +27,7 @@ class Command(BaseCommand):
         df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
         df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
         #Efface les doublon commun de la colonne facture et produit
+        df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate']).dt.date
         dfPropre = df.copy()
         
 

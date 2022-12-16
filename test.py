@@ -115,3 +115,16 @@ df["stockcode"] = df["stockcode"].str.lower()
 df = df.drop_duplicates(subset=["stockcode"], inplace=True)
 
 df.columns = df.columns.str.lower()
+
+# requete sql inner join sur 3 table affiche chaque facture avec X pays et X stockcode
+sql = '''SELECT country.country, invoice.invoiceno, detailfacture.stockcode
+            FROM country
+            INNER JOIN invoice on country.country = invoice.country
+            INNER JOIN detailfacture on invoice.invoiceno = detailfacture.invoiceno'''
+
+
+sql2 = '''SELECT country.country, count(*)
+	FROM country
+	INNER JOIN invoice on country.country = invoice.country
+	GROUP BY country.country
+	ORDER BY count DESC'''

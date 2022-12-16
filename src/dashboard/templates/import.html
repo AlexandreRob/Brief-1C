@@ -5,14 +5,13 @@
     {% if user.is_authenticated %}
     <h1>Import csv</h1>
         <br><br>
-        <form method="POST" action="import_csv">
+        <form enctype="multipart/form-data" method="POST" action="">
             {% csrf_token %}
-            <div class="input-group mb-3">
-                <button id="btn-import-csv" type="submit" class="btn btn-primary" href="">Importer</button>
-                <input class="form-control" type="file" name="csv">
+                <div class="input-group mb-3">
+                {{ form.file }}
+                <button class="btn btn-secondary" type="submit">Importer</button>
             </div>
         </form>
-
         <br><br>
         <a class="btn btn-warning " href="{%  url 'graph1' %}">Voir graph1</a>
 

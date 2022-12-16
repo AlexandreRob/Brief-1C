@@ -10,6 +10,7 @@ from .models import *
 from django.conf import settings
 from dashboard.models import *
 from .forms import UploadFileForm
+from io import TextIOWrapper
 
 
 
@@ -18,112 +19,9 @@ def home(request):
     return render(request, "home.html", {})
 
 
-
-
-
-def import_csv(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST)
-        if form.is_valid():
-            
-            file_csv = form
-            df = df = pd.read_csv(file_csv, encoding= 'unicode_escape')
-
-            ######################################################################### Nettoyage df
-            df
-            indexNames = df[df["Country"] == "Unspecified"].index
-            df.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
-
-            df.drop(df[df['InvoiceNo'].str.len() > 6].index, inplace = True)
-            SuppQuantity = df[df['Quantity'] < 0 ].index
-            df.drop(SuppQuantity , inplace=True)  #Efface quantité < 0
-
-            SuppPrix = df[df["UnitPrice"]== 0].index
-            df.drop(SuppPrix , inplace=True)  #Efface prix unitaire = 0
-            
-            indexNames = df[df['StockCode'].str.match('^A-Za-z')==True].index
-            df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
-            df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
-            #Efface les doublon commun de la colonne facture et produit
-            dfPropre = df.copy()
-            
-
-            ######################################################################### Table Product
-            product = dfPropre
-            product = product.drop(['Country','InvoiceNo','UnitPrice','Quantity','CustomerID','InvoiceDate'], axis=1)
-            product.drop_duplicates("StockCode", keep = 'first', inplace= True)
-            
-            
-            ######################################################################### Table detailfacture
-            detailfacture = dfPropre
-            detailfacture = detailfacture.drop(['Country', 'Description','CustomerID','InvoiceDate'], axis=1)
-            
-            
-
-            ######################################################################### Table InvoiceNo
-            invoiceno = dfPropre
-            invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode','InvoiceDate','CustomerID'], axis=1)
-            invoiceno.drop_duplicates("InvoiceNo", keep = 'first', inplace= True)
-
-            product.columns = product.columns.str.lower()
-            invoiceno.columns = invoiceno.columns.str.lower()
-            detailfacture.columns = detailfacture.columns.str.lower()
-
-            ######################################################################### Table Country
-            country = dfPropre
-            country.drop_duplicates(['Country'],keep = 'first', inplace= True)
-            country.columns = country.columns.str.lower()
-            country = country['country']
-            
-            
-            
-            # engine = sqlalchemy.create_engine('postgresql://postgres:admin@localhost/DB_AFPAR01')
-            user = settings.DATABASES['default']['USER']
-            password = settings.DATABASES['default']['PASSWORD']
-            database_name = settings.DATABASES['default']['NAME']
-
-            db_url = 'postgresql://{user}:{password}@localhost:5432/{database_name}'.format(user=user, password=password,
-            database_name=database_name)
-            
-            engine = sqlalchemy.create_engine(db_url, echo=False)
-            
-
-
-
-
-
-            row_iter = product.iterrows()
-
-            objs = [
-
-                Product(
-
-                    stockcode = row['stockcode'],
-
-                    description = row['description'],
-                )
-
-                for index, row in row_iter
-
-            ]
-
-            Product.objects.bulk_create(objs)
-
-            
-            country.to_sql("country",if_exists='append', con = engine, index=False)
-            invoiceno.to_sql('invoice',if_exists='append', con = engine, index=False)
-            detailfacture.to_sql("detailfacture",if_exists='append', con = engine, index=False)
-            return redirect('import.html')
-        else:
-            form = UploadFileForm()
-    return render(request, "import.html", {})
-        
-def netCSV(form):
-    file_csv = form
-    df = df = pd.read_csv(file_csv, encoding= 'unicode_escape')
-
+def produit(df):
+    df = df
     ######################################################################### Nettoyage df
-    df
     indexNames = df[df["Country"] == "Unspecified"].index
     df.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
 
@@ -138,39 +36,14 @@ def netCSV(form):
     df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
     df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
     #Efface les doublon commun de la colonne facture et produit
-    dfPropre = df.copy()
-    
 
     ######################################################################### Table Product
-    product = dfPropre
+    product = df
     product = product.drop(['Country','InvoiceNo','UnitPrice','Quantity','CustomerID','InvoiceDate'], axis=1)
     product.drop_duplicates("StockCode", keep = 'first', inplace= True)
-    
-    
-    ######################################################################### Table detailfacture
-    detailfacture = dfPropre
-    detailfacture = detailfacture.drop(['Country', 'Description','CustomerID','InvoiceDate'], axis=1)
-    
-    
-
-    ######################################################################### Table InvoiceNo
-    invoiceno = dfPropre
-    invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode','InvoiceDate','CustomerID'], axis=1)
-    invoiceno.drop_duplicates("InvoiceNo", keep = 'first', inplace= True)
-
     product.columns = product.columns.str.lower()
-    invoiceno.columns = invoiceno.columns.str.lower()
-    detailfacture.columns = detailfacture.columns.str.lower()
 
-    ######################################################################### Table Country
-    country = dfPropre
-    country.drop_duplicates(['Country'],keep = 'first', inplace= True)
-    country.columns = country.columns.str.lower()
-    country = country['country']
-    
-    
-    
-    # engine = sqlalchemy.create_engine('postgresql://postgres:admin@localhost/DB_AFPAR01')
+    ######################################################################### Connexion db
     user = settings.DATABASES['default']['USER']
     password = settings.DATABASES['default']['PASSWORD']
     database_name = settings.DATABASES['default']['NAME']
@@ -179,36 +52,140 @@ def netCSV(form):
     database_name=database_name)
     
     engine = sqlalchemy.create_engine(db_url, echo=False)
+
+    product.to_sql("product",if_exists='append', con = engine, index=False)
+
+def detailfacture(df):
+    ######################################################################### Nettoyage df
+    df = df
+    indexNames = df[df["Country"] == "Unspecified"].index
+    df.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
+
+    df.drop(df[df['InvoiceNo'].str.len() > 6].index, inplace = True)
+    SuppQuantity = df[df['Quantity'] < 0 ].index
+    df.drop(SuppQuantity , inplace=True)  #Efface quantité < 0
+
+    SuppPrix = df[df["UnitPrice"]== 0].index
+    df.drop(SuppPrix , inplace=True)  #Efface prix unitaire = 0
     
+    indexNames = df[df['StockCode'].str.match('^A-Za-z')==True].index
+    df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
+    df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
+    #Efface les doublon commun de la colonne facture et produit
 
+    ######################################################################### Table detailfacture
+    detailfacture = df
+    detailfacture = detailfacture.drop(['Country', 'Description','CustomerID','InvoiceDate'], axis=1)
+    detailfacture.columns = detailfacture.columns.str.lower()
 
+    ######################################################################### Connexion db
+    user = settings.DATABASES['default']['USER']
+    password = settings.DATABASES['default']['PASSWORD']
+    database_name = settings.DATABASES['default']['NAME']
 
-
-
-    row_iter = product.iterrows()
-
-    objs = [
-
-        Product(
-
-            stockcode = row['stockcode'],
-
-            description = row['description'],
-        )
-
-        for index, row in row_iter
-
-    ]
-
-    Product.objects.bulk_create(objs)
-
+    db_url = 'postgresql://{user}:{password}@localhost:5432/{database_name}'.format(user=user, password=password,
+    database_name=database_name)
     
-    country.to_sql("country",if_exists='append', con = engine, index=False)
+    engine = sqlalchemy.create_engine(db_url, echo=False)
+    ######################################################################### Envoie dans db
+    detailfacture.to_sql("detailfacture",if_exists='append', con = engine, index=False)
+
+def invoiceno(df):
+    df = df
+    ######################################################################### Nettoyage df
+    indexNames = df[df["Country"] == "Unspecified"].index
+    df.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
+
+    df.drop(df[df['InvoiceNo'].str.len() > 6].index, inplace = True)
+    SuppQuantity = df[df['Quantity'] < 0 ].index
+    df.drop(SuppQuantity , inplace=True)  #Efface quantité < 0
+
+    SuppPrix = df[df["UnitPrice"]== 0].index
+    df.drop(SuppPrix , inplace=True)  #Efface prix unitaire = 0
+    
+    indexNames = df[df['StockCode'].str.match('^A-Za-z')==True].index
+    df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
+    df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
+    #Efface les doublon commun de la colonne facture et produit
+    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate']).dt.date
+    # Change format date without heure
+
+    ######################################################################### Table Product
+    invoiceno = df
+    invoiceno = invoiceno.drop(['Description','Quantity','UnitPrice','Description','StockCode','CustomerID'], axis=1)
+    invoiceno.drop_duplicates("InvoiceNo", keep = 'first', inplace= True)
+    invoiceno.columns = invoiceno.columns.str.lower()
+
+    ######################################################################### Connexion db
+    user = settings.DATABASES['default']['USER']
+    password = settings.DATABASES['default']['PASSWORD']
+    database_name = settings.DATABASES['default']['NAME']
+
+    db_url = 'postgresql://{user}:{password}@localhost:5432/{database_name}'.format(user=user, password=password,
+    database_name=database_name)
+    
+    engine = sqlalchemy.create_engine(db_url, echo=False)
+    ######################################################################### Envoie dans db
     invoiceno.to_sql('invoice',if_exists='append', con = engine, index=False)
-    detailfacture.to_sql("detailfacture",if_exists='append', con = engine, index=False)   
+ 
+def country(df):
+    df = df
+    ######################################################################### Nettoyage df
+    indexNames = df[df["Country"] == "Unspecified"].index
+    df.drop(indexNames , inplace=True) #Efface les pays = a Unspecified
+
+    df.drop(df[df['InvoiceNo'].str.len() > 6].index, inplace = True)
+    SuppQuantity = df[df['Quantity'] < 0 ].index
+    df.drop(SuppQuantity , inplace=True)  #Efface quantité < 0
+
+    SuppPrix = df[df["UnitPrice"]== 0].index
+    df.drop(SuppPrix , inplace=True)  #Efface prix unitaire = 0
+    
+    indexNames = df[df['StockCode'].str.match('^A-Za-z')==True].index
+    df.drop(indexNames , inplace=True) #Efface stockcode composer de A-Z et a-z
+    df.drop_duplicates(subset= ['InvoiceNo', 'StockCode'], inplace = True)
+    #Efface les doublon commun de la colonne facture et produit
+
+    ######################################################################### Table Product
+    country = df
+    country.drop_duplicates(['Country'],keep = 'first', inplace= True)
+    country.columns = country.columns.str.lower()
+    country = country['country']
+    
+    ######################################################################### Connexion db
+    user = settings.DATABASES['default']['USER']
+    password = settings.DATABASES['default']['PASSWORD']
+    database_name = settings.DATABASES['default']['NAME']
+
+    db_url = 'postgresql://{user}:{password}@localhost:5432/{database_name}'.format(user=user, password=password,
+    database_name=database_name)
+    
+    engine = sqlalchemy.create_engine(db_url, echo=False)
+    ######################################################################### Envoie dans db
+    country.to_sql("country",if_exists='append', con = engine, index=False)
+
 
 def page_csv(request):
-    return render(request, "import.html", {})
+    
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        file = request.FILES['file']
+        file1 = TextIOWrapper(file, encoding='unicode_escape', newline='')
+        
+        df = pd.read_csv(file1, encoding='unicode_escape')
+        df1 = df.copy()
+        df2 = df.copy()
+        df3 = df.copy()
+        df4 = df.copy()
+
+        produit(df1)
+        country(df2)
+        invoiceno(df3)
+        detailfacture(df4)
+        return HttpResponse('Is good')
+    else:
+        form = UploadFileForm()
+    return render(request, "import.html", {'form':form})
     
 
 def topG1(request): 
