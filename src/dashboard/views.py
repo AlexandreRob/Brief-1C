@@ -201,17 +201,6 @@ def topG1(request):
   
     return render(request, "Graph1.html", {'data': res})
 
-def test(request):
-    sql = '''SELECT product.stockcode, count(*)
-                FROM product
-                INNER JOIN detailfacture on product.stockcode = detailfacture.stockcode
-                GROUP BY product.stockcode
-                ORDER BY count DESC
-                LIMIT 10'''
-        
-    
-    res = Product.objects.raw(sql)
-    return render(request, "test.html", {'data': res})
 
 def flopG1(request): 
     sql = '''SELECT product.stockcode, count(*)

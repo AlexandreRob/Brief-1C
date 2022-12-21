@@ -10,5 +10,4 @@ urlpatterns = [
     path('graph2no/', views.G2no, name='g2no'),
     path('graph2flop/', views.flopG2,name='graph2flop'),
     path('graph3/', views.graph3,name='graph3'),
-    path('test/', views.test,name='test'),
 ]
